@@ -61,7 +61,7 @@ function App() {
           <button className="logout-btn" onClick={() => auth.signOut()}>Logout</button>
         </div>
         <p className="app-subtitle">
-          Powered by Gemini 1.5 Pro
+          Powered by Gemini 1.5 Pro (Latest)
         </p>
       </header>
 
