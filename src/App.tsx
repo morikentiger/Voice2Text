@@ -9,7 +9,7 @@ import './App.css'
 function App() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const [apiKey, setApiKey] = useState('')
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '')
   const [transcription, setTranscription] = useState('')
   const [isTranscribing, setIsTranscribing] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -21,6 +21,13 @@ function App() {
     })
     return () => unsubscribe()
   }, [])
+
+  // Save API key to localStorage when it changes
+  useEffect(() => {
+    if (apiKey) {
+      localStorage.setItem('gemini_api_key', apiKey)
+    }
+  }, [apiKey])
 
   const handleAudioRecorded = async (audioBlob: Blob) => {
     if (!apiKey) {
