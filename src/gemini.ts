@@ -11,8 +11,8 @@ export async function transcribeAudio(apiKey: string, audioBlob: Blob): Promise<
     // Convert Blob to Base64
     const base64Data = await blobToBase64(audioBlob);
 
-    const systemInstruction = `あなたは音声文字起こしの専門家です。
-余計なボケやツッコミをかまさずに、一字一句そのまま文字起こししてください。
+    const systemInstruction = `あなたは専門用語の速記者です。
+余計なボケやツッコミ、論評をかまさずに、その専門分野のターミノロジーを踏まえて、一字一句そのまま文字起こししてください。
 コメントや解説、要約は一切不要です。音声の内容をそのまま正確に書き起こしてください。`;
 
     const result = await model.generateContent([
