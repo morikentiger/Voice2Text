@@ -6,7 +6,7 @@ export async function transcribeAudio(apiKey: string, audioBlob: Blob): Promise<
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-3.0-flash" }, { apiVersion: 'v1beta' });
+    const model = genAI.getGenerativeModel({ model: "gemini-3-pro-preview" }, { apiVersion: 'v1beta' });
 
     // Convert Blob to Base64
     const base64Data = await blobToBase64(audioBlob);
