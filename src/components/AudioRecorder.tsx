@@ -22,7 +22,15 @@ export const AudioRecorder = ({ onAudioRecorded }: AudioRecorderProps) => {
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
+
+      // Determine supported mimeType for mobile compatibility
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm')
+        ? 'audio/webm'
+        : MediaRecorder.isTypeSupported('audio/mp4')
+          ? 'audio/mp4'
+          : 'audio/wav';
+
+      mediaRecorderRef.current = new MediaRecorder(stream, { mimeType });
       chunksRef.current = [];
 
       mediaRecorderRef.current.ondataavailable = (e) => {
@@ -32,7 +40,10 @@ export const AudioRecorder = ({ onAudioRecorded }: AudioRecorderProps) => {
       };
 
       mediaRecorderRef.current.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        // Use the actual mimeType from the recorder
+        const actualMimeType = mediaRecorderRef.current?.mimeType || mimeType;
+        const blob = new Blob(chunksRef.current, { type: actualMimeType });
+        console.log('Recording completed. MimeType:', actualMimeType, 'Size:', blob.size);
         onAudioRecorded(blob);
         stream.getTracks().forEach(track => track.stop());
       };
