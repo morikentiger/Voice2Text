@@ -68,6 +68,39 @@
   box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
 }
 
+.system-prompt-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.system-prompt-textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-color);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
+  transition: all 0.2s;
+}
+
+.system-prompt-textarea:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+}
+
+.system-prompt-textarea::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
 .result-section {
   min-height: 100px;
 }

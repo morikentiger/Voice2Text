@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { AudioRecorder } from './components/AudioRecorder'
-import { transcribeAudio } from './gemini'
+import { transcribeAudio, DEFAULT_SYSTEM_PROMPT } from './gemini'
 import { Login } from './components/Login'
 import { auth } from './firebase'
 import { onAuthStateChanged, type User } from 'firebase/auth'
@@ -10,6 +10,7 @@ function App() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '')
+  const [systemPrompt, setSystemPrompt] = useState(() => localStorage.getItem('system_prompt') || '')
   const [transcription, setTranscription] = useState('')
   const [isTranscribing, setIsTranscribing] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -29,6 +30,11 @@ function App() {
     }
   }, [apiKey])
 
+  // Save system prompt to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('system_prompt', systemPrompt)
+  }, [systemPrompt])
+
   const handleAudioRecorded = async (audioBlob: Blob) => {
     if (!apiKey) {
       setError("Please enter your Google API Key first.")
@@ -40,7 +46,7 @@ function App() {
     setTranscription('')
 
     try {
-      const text = await transcribeAudio(apiKey, audioBlob)
+      const text = await transcribeAudio(apiKey, audioBlob, systemPrompt)
       setTranscription(text)
     } catch (err: any) {
       console.error("Transcription error:", err)
@@ -82,6 +88,18 @@ function App() {
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
             className="api-input"
+          />
+        </div>
+
+        <div className="system-prompt-section">
+          <label htmlFor="system-prompt" className="api-label">System Prompt (optional)</label>
+          <textarea
+            id="system-prompt"
+            placeholder={DEFAULT_SYSTEM_PROMPT}
+            value={systemPrompt}
+            onChange={(e) => setSystemPrompt(e.target.value)}
+            className="system-prompt-textarea"
+            rows={4}
           />
         </div>
 

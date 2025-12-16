@@ -1,6 +1,10 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-export async function transcribeAudio(apiKey: string, audioBlob: Blob): Promise<string> {
+const DEFAULT_SYSTEM_PROMPT = `あなたは専門用語の速記者です。
+余計なボケやツッコミ、論評をかまさずに、その専門分野のターミノロジーを踏まえて、一字一句そのまま文字起こししてください。
+コメントや解説、要約は一切不要です。音声の内容をそのまま正確に書き起こしてください。`;
+
+export async function transcribeAudio(apiKey: string, audioBlob: Blob, systemPrompt?: string): Promise<string> {
     if (!apiKey) {
         throw new Error("API Key is missing.");
     }
@@ -11,12 +15,11 @@ export async function transcribeAudio(apiKey: string, audioBlob: Blob): Promise<
     // Convert Blob to Base64
     const base64Data = await blobToBase64(audioBlob);
 
-    const systemInstruction = `あなたは専門用語の速記者です。
-余計なボケやツッコミ、論評をかまさずに、その専門分野のターミノロジーを踏まえて、一字一句そのまま文字起こししてください。
-コメントや解説、要約は一切不要です。音声の内容をそのまま正確に書き起こしてください。`;
+    // Use provided systemPrompt or fall back to default
+    const instruction = systemPrompt?.trim() || DEFAULT_SYSTEM_PROMPT;
 
     const result = await model.generateContent([
-        systemInstruction,
+        instruction,
         {
             inlineData: {
                 mimeType: audioBlob.type, // e.g., 'audio/webm'
@@ -27,6 +30,8 @@ export async function transcribeAudio(apiKey: string, audioBlob: Blob): Promise<
 
     return result.response.text();
 }
+
+export { DEFAULT_SYSTEM_PROMPT };
 
 function blobToBase64(blob: Blob): Promise<string> {
     return new Promise((resolve, reject) => {
